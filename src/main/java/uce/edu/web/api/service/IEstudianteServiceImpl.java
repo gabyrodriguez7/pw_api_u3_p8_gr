@@ -23,4 +23,24 @@ public class IEstudianteServiceImpl implements IEstudianteService {
         return this.estudianteRepo.seleccionarTodos();
     }
 
+    @Override
+    public void actualizarPorId(Estudiante estudiante) {
+     this.estudianteRepo.actualizarParcialPorID(estudiante);
+    }
+
+    @Override
+    public void actualizarParcialPorID(Estudiante estudiante) {
+      this.estudianteRepo.actualizarParcialPorID(estudiante);
+    }
+
+    @Override
+    public void borrarPorID(Integer id) {
+      this.estudianteRepo.borrarPorID(id);
+    }
+
+    @Override
+    public void guardar(Estudiante estudiante) {
+       this.estudianteRepo.insertar(estudiante);
+    }
+
 }
