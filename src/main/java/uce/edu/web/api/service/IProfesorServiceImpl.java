@@ -22,4 +22,24 @@ public class IProfesorServiceImpl implements IProfesorService {
         return this.profesorRepo.seleccionarTodos();
     }
 
+    @Override
+    public void guardar(Profesor profesor) {
+        this.profesorRepo.insertar(profesor);
+    }
+
+    @Override
+    public void actualizarPorId(Profesor profesor) {
+        this.profesorRepo.actualizarPorId(profesor);
+    }
+
+    @Override
+    public void actualizarParcialPorId(Profesor profesor) {
+        this.profesorRepo.actualizarParcialPorId(profesor);
+    }
+
+    @Override
+    public void borrarporId(Integer id) {
+        this.profesorRepo.borrarPorId(id);
+    }
+
 }
