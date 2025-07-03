@@ -27,7 +27,7 @@ public class EstudianteController {
 
     @GET
     @Path("/consultar/{id}")
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response consultarPorId(@PathParam("id") Integer id) {
         return Response.status(227).entity(this.estudianteService.buscarPorID(id)).build();
     }
@@ -35,7 +35,6 @@ public class EstudianteController {
     //Se filtra por:
     //?genero=F&provincia=pichincha
     @GET
-
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
@@ -49,7 +48,7 @@ public class EstudianteController {
 
     @POST
     @Path("")
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
@@ -60,6 +59,7 @@ public class EstudianteController {
 
     @PUT
     @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public void actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
         estudiante.setId(id);
         this.estudianteService.actualizarPorId(estudiante);
