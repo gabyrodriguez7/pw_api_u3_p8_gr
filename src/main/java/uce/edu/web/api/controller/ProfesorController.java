@@ -4,7 +4,6 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -12,21 +11,18 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import uce.edu.web.api.repository.modelo.Profesor;
 import uce.edu.web.api.service.IProfesorService;
 
 @Path("/profesores")
-public class ProfesorController {
+public class ProfesorController extends BaseControlador{
 
     @Inject
     private IProfesorService profesorService;
 
     @GET
     @Path("/consultar/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Consultar profesor por ID",
             description = "Esta capacidad permite consultar profesor por su identificador"
@@ -37,8 +33,8 @@ public class ProfesorController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
-        @Operation(
+
+    @Operation(
             summary = "Consultar todos los profesor",
             description = "Esta capacidad permite consultar todos los profesores"
     )
@@ -59,7 +55,6 @@ public class ProfesorController {
 
     @PUT
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Actualizar profesor por ID",
             description = "Esta capacidad permite actualizar profesor por ID"
@@ -72,7 +67,6 @@ public class ProfesorController {
 
     @PATCH
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Actualizar profesor",
             description = "Esta capacidad permite actualizar profesor"

@@ -1,5 +1,8 @@
 package uce.edu.web.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -7,40 +10,43 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import uce.edu.web.api.repository.modelo.Estudiante;
+import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.service.IEstudianteService;
+import uce.edu.web.api.service.to.EstudianteTo;
 
 @Path("/estudiantes")
-public class EstudianteController {
-
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class EstudianteController extends  BaseControlador{
     @Inject
     private IEstudianteService estudianteService;
 
     @GET
     @Path("/consultar/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Consultar estudiante por ID",
             description = "Esta capacidad permite consultar estudiante por su identificador"
     )
-    public Response consultarPorId(@PathParam("id") Integer id) {
-        return Response.status(227).entity(this.estudianteService.buscarPorID(id)).build();
+    public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
+        EstudianteTo estu = this.estudianteService.buscarPorID(id,uriInfo);
+        return Response.status(227).entity(this.estudianteService.buscarPorID(id, uriInfo)).build();
     }
 
     //Se filtra por:
-    //?genero=F&provincia=pichincha
+    //?genero=F&provincia=pichincha solo si es tipo SOAP -> XML & RESTful ->JSON
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Consultar todos los estudiante",
             description = "Esta capacidad permite consultar todos los estudiante"
@@ -52,7 +58,6 @@ public class EstudianteController {
 
     @POST
     @Path("")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
@@ -64,7 +69,6 @@ public class EstudianteController {
 
     @PUT
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Actualizar  estudiante por ID",
             description = "Esta capacidad permite actualizar estudiante por ID"
@@ -75,9 +79,8 @@ public class EstudianteController {
         return Response.noContent().build();
     }
 
-    @PATCH
+  /*  @PATCH
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Actualizar  estudiante",
             description = "Esta capacidad permite actualizar estudiante"
@@ -92,7 +95,7 @@ public class EstudianteController {
         this.estudianteService.actualizarPorId(e);
         return Response.ok(e).build();
 
-    }
+    }*/
 
     @DELETE
     @Path("/{id}")
@@ -103,5 +106,21 @@ public class EstudianteController {
     public Response borrarPorId(@PathParam("id") Integer id) {
         this.estudianteService.borrarPorID(id);
         return Response.noContent().build();
+    }
+
+    //http://localhost:8081/api/matricula/v1/estudiantes/1/hijos
+    @GET
+    @Path("/{id}/hijos")
+    public List<Hijo> obtenerHijosId(@PathParam("id") Integer id){
+        Hijo h1 = new Hijo();
+        h1.setNombre("pepito");
+        Hijo h2 = new Hijo();
+        h2.setNombre("juanito");
+
+        List<Hijo> hijos = new ArrayList<>();
+        hijos.add(h1);
+        hijos.add(h2);
+        return hijos;
+
     }
 }
