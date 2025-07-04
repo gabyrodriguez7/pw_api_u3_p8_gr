@@ -25,7 +25,7 @@ public class EstudianteTo {
         this.fechaNacimiento = fechaNacimiento;
         this.genero = genero;
 
-        URI todosHijos = uriInfo.getBaseUriBuilder().path(EstudianteController.class).path(EstudianteController.class,"ObtenerHijosPorId").build(id);
+        URI todosHijos = uriInfo.getBaseUriBuilder().path(EstudianteController.class).path(EstudianteController.class,"obtenerHijosId").build(id);
         _links.put("hijos", todosHijos.toString());
     }
     //SET & GET

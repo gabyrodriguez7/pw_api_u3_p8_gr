@@ -28,7 +28,7 @@ import uce.edu.web.api.service.to.EstudianteTo;
 @Path("/estudiantes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class EstudianteController extends  BaseControlador{
+public class EstudianteController extends BaseControlador{
     @Inject
     private IEstudianteService estudianteService;
 
@@ -40,7 +40,7 @@ public class EstudianteController extends  BaseControlador{
     )
     public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
         EstudianteTo estu = this.estudianteService.buscarPorID(id,uriInfo);
-        return Response.status(227).entity(this.estudianteService.buscarPorID(id, uriInfo)).build();
+        return Response.status(227).entity(estu).build();
     }
 
     //Se filtra por:
