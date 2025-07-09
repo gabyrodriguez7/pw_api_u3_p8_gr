@@ -1,6 +1,5 @@
 package uce.edu.web.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -23,14 +22,18 @@ import jakarta.ws.rs.core.UriInfo;
 import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.service.IEstudianteService;
+import uce.edu.web.api.service.IHijoService;
 import uce.edu.web.api.service.to.EstudianteTo;
 
 @Path("/estudiantes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class EstudianteController extends BaseControlador{
+public class EstudianteController{
     @Inject
     private IEstudianteService estudianteService;
+
+    @Inject
+    private IHijoService hijoService;
 
     @GET
     @Path("/consultar/{id}")
@@ -112,7 +115,9 @@ public class EstudianteController extends BaseControlador{
     @GET
     @Path("/{id}/hijos")
     public List<Hijo> obtenerHijosId(@PathParam("id") Integer id){
-        Hijo h1 = new Hijo();
+
+        return this.hijoService.buscarPorEstudianteId(id);
+        /*Hijo h1 = new Hijo();
         h1.setNombre("pepito");
         Hijo h2 = new Hijo();
         h2.setNombre("juanito");
@@ -120,7 +125,7 @@ public class EstudianteController extends BaseControlador{
         List<Hijo> hijos = new ArrayList<>();
         hijos.add(h1);
         hijos.add(h2);
-        return hijos;
+        return hijos;*/
 
     }
 }
