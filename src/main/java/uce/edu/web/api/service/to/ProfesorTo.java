@@ -7,24 +7,15 @@ import java.util.Map;
 import jakarta.ws.rs.core.UriInfo;
 import uce.edu.web.api.controller.ProfesorController;
 
-
 public class ProfesorTo {
-    Integer id;
-    String nombre;
-    String apellido;
-    String email;
-    String titulo;
-    public Map<String,String> _links = new HashMap<>();
 
-    public ProfesorTo(String apellido, String email, Integer id, String nombre, String titulo, UriInfo uriInfo) {
-        this.apellido = apellido;
-        this.email = email;
-        this.id = id;
-        this.nombre = nombre;
-        this.titulo = titulo;
-        URI todosHijos = uriInfo.getBaseUriBuilder().path(ProfesorController.class).path(ProfesorController.class,"obtenerHijosId").build(id);
-        _links.put("hijos", todosHijos.toString());
-    }
+    private Integer id;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String titulo;
+    private Map<String, String> _links = new HashMap<>();
+
     //SET & GET
     public Integer getId() {
         return id;
@@ -74,4 +65,38 @@ public class ProfesorTo {
         this._links = _links;
     }
 
+   public void buildURI(UriInfo uriInfo) {
+    // Enlace para obtener este profesor (GET)
+    URI selfUri = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "consultarPorId")
+            .build(this.id);
+    _links.put("profesor", selfUri.toString());
+
+    // Enlace para crear un nuevo profesor (POST)
+    URI createUri = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .build();
+    _links.put("crear", createUri.toString());
+
+    // Enlace para actualizar este profesor (PUT)
+    URI updateUri = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "consultarPorId")
+            .build(this.id);
+    _links.put("actualizar", updateUri.toString());
+
+    // Enlace para eliminar este profesor (DELETE)
+    URI deleteUri = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "borrarPorId")
+            .build(this.id);
+    _links.put("eliminar", deleteUri.toString());
+
+    // Enlace para obtener todos los profesores (GET)
+    URI allProfesoresUri = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .build();
+    _links.put("todos", allProfesoresUri.toString());
+}
 }

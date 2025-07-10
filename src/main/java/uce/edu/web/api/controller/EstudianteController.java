@@ -60,7 +60,7 @@ public class EstudianteController{
             summary = "Consultar todos los estudiante",
             description = "Esta capacidad permite consultar todos los estudiante"
     )
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo) {
+    public Response consultarTodos2(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo) {
         List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
         List<EstudianteTo> estudiantesTo = estudiantes.stream()
                 .map(estudiante -> {
@@ -73,13 +73,14 @@ public class EstudianteController{
         return Response.status(Response.Status.OK).entity(estudiantesTo).build();
     }
 
+
     @POST
     @Path("")
     @Operation(
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
     )
-    public Response  guardar(@RequestBody Estudiante estudiante,@Context UriInfo uriInfo) {
+    public Response guardar(@RequestBody Estudiante estudiante,@Context UriInfo uriInfo) {
         this.estudianteService.guardar(estudiante);
         
         URI createdUri = uriInfo.getBaseUriBuilder()

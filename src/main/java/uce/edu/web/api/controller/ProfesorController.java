@@ -1,5 +1,6 @@
 package uce.edu.web.api.controller;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -19,9 +21,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.repository.modelo.Profesor;
 import uce.edu.web.api.service.IProfesorService;
+import uce.edu.web.api.service.mapper.ProfesorMapper;
 import uce.edu.web.api.service.to.ProfesorTo;
 
 @Path("/profesores")
@@ -33,99 +35,101 @@ public class ProfesorController{
     private IProfesorService profesorService;
 
     @GET
-    @Path("/consultar/{id}")
+    @Path("/{id}")
     @Operation(
             summary = "Consultar profesor por ID",
             description = "Esta capacidad permite consultar profesor por su identificador"
     )
     public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
-        ProfesorTo prof = this.profesorService.buscarPorId(id, uriInfo);
+        ProfesorTo prof =ProfesorMapper.toTo(this.profesorService.buscarPorId(id));
+        prof.buildURI(uriInfo);
         return Response.status(227).entity(prof).build();
     }
 
     @GET
     @Path("")
-
     @Operation(
             summary = "Consultar todos los profesor",
             description = "Esta capacidad permite consultar todos los profesores"
     )
-    public Response consultarTodos() {
-        return Response.status(Response.Status.OK).entity( this.profesorService.consultarTodos()).build();
+    public Response consultarTodos(@Context UriInfo uriInfo) {
+        List<Profesor> profesores = this.profesorService.consultarTodos();
+        List<ProfesorTo> profesoresTo = new ArrayList<>();
+        
+        for (Profesor profesor : profesores) {
+            ProfesorTo profesorTo = ProfesorMapper.toTo(profesor);
+            profesorTo.buildURI(uriInfo);
+            profesoresTo.add(profesorTo);
+        }
+        
+        return Response.ok(profesoresTo).build();
     }
 
     @POST
-    @Path("")
     @Operation(
             summary = "Guardar profesor",
-            description = "Esta capacidad permite guardar un profesor"
+            description = "Esta capacidad permite guardar un nuevo profesor"
     )
-    public Response guardar(@RequestBody Profesor profesor) {
-        profesorService.guardar(profesor);
-        return Response.status(Response.Status.CREATED).build();
+    public Response guardar(@RequestBody Profesor profesor, @Context UriInfo uriInfo) {
+        this.profesorService.guardar(profesor);
+        
+        URI createdUri = uriInfo.getBaseUriBuilder()
+                .path(ProfesorController.class)
+                .path(ProfesorController.class, "consultarPorId")
+                .build(profesor.getId());
+
+        return Response.created(createdUri)
+                       .entity(ProfesorMapper.toTo(profesor))
+                       .build();
     }
 
     @PUT
     @Path("/{id}")
     @Operation(
-            summary = "Actualizar profesor por ID",
-            description = "Esta capacidad permite actualizar profesor por ID"
+            summary = "Actualizar profesor completo por ID",
+            description = "Esta capacidad permite actualizar todos los campos de un profesor"
     )
     public Response actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
         profesor.setId(id);
-        profesorService.actualizarPorId(profesor);
+        this.profesorService.actualizarPorId(profesor);
         return Response.noContent().build();
     }
 
-  /*   @PATCH
+    @PATCH
     @Path("/{id}")
     @Operation(
-            summary = "Actualizar profesor",
-            description = "Esta capacidad permite actualizar profesor"
+            summary = "Actualización parcial de profesor",
+            description = "Esta capacidad permite actualizar campos específicos de un profesor"
     )
-    public Response  actualizacionParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
+    public Response actualizarParcialPorId(
+            @RequestBody Profesor profesor, 
+            @PathParam("id") Integer id,
+            @Context UriInfo uriInfo) {
+        
         Profesor p = this.profesorService.buscarPorId(id);
-    if (profesor.getNombre() != null) {
-        p.setNombre(profesor.getNombre());
+        
+        if (profesor.getNombre() != null) p.setNombre(profesor.getNombre());
+        if (profesor.getApellido() != null) p.setApellido(profesor.getApellido());
+        if (profesor.getEmail() != null) p.setEmail(profesor.getEmail());
+        if (profesor.getTitulo() != null) p.setTitulo(profesor.getTitulo());
+        
+        this.profesorService.actualizarPorId(p);
+        
+        ProfesorTo updatedProfesorTo = ProfesorMapper.toTo(p);
+        updatedProfesorTo.buildURI(uriInfo);
+        
+        return Response.ok(updatedProfesorTo).build();
     }
-    if (profesor.getApellido() != null) {
-        p.setApellido(profesor.getApellido());
-    }
-    if (profesor.getEmail() != null) {
-        p.setEmail(profesor.getEmail());
-    }
-    if (profesor.getTitulo() != null) {
-        p.setTitulo(profesor.getTitulo());
-    }
-    
-    profesorService.actualizarPorId(p);
-    return Response.ok(p).build();
-
-    }*/
 
     @DELETE
     @Path("/{id}")
     @Operation(
             summary = "Eliminar profesor",
-            description = "Esta capacidad permite eliminar profesor"
+            description = "Esta capacidad permite eliminar un profesor por su ID"
     )
-    public Response  eliminar(@PathParam("id") Integer id) {
+    public Response borrarPorId(@PathParam("id") Integer id) {
         this.profesorService.borrarporId(id);
         return Response.noContent().build();
     }
-        //http://localhost:8081/api/matricula/v1/profesores/1/hijos
-    @GET
-    @Path("/{id}/hijos")
-    public List<Hijo> obtenerHijosId(@PathParam("id") Integer id){
-        Hijo h1 = new Hijo();
-        h1.setNombre("pepito");
-        Hijo h2 = new Hijo();
-        h2.setNombre("juanito");
 
-        List<Hijo> hijos = new ArrayList<>();
-        hijos.add(h1);
-        hijos.add(h2);
-        return hijos;
-
-    }
 }
