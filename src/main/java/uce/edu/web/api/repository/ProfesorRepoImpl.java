@@ -29,7 +29,7 @@ public class ProfesorRepoImpl implements IProfesorRepo{
 
     @Override
     public void insertar(Profesor profesor) {
-         this.entityManager.merge(profesor);
+         this.entityManager.persist(profesor);
     }
 
     @Override

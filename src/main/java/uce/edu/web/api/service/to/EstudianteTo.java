@@ -15,48 +15,63 @@ public class EstudianteTo {
     private String apellido;
     private LocalDateTime fechaNacimiento;
     private String genero;
-    public Map<String,String> _links = new HashMap<>();
-
+    public Map<String, String> _links = new HashMap<>();
 
     //SET & GET
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
     public String getApellido() {
         return apellido;
     }
+
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
+
     public LocalDateTime getFechaNacimiento() {
         return fechaNacimiento;
     }
+
     public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
+
     public String getGenero() {
         return genero;
     }
+
     public void setGenero(String genero) {
         this.genero = genero;
     }
+
     public Map<String, String> get_links() {
         return _links;
     }
+
     public void set_links(Map<String, String> _links) {
         this._links = _links;
     }
-    
-    public void buildURI(UriInfo uriInfo){
+
+    public void buildURI(UriInfo uriInfo) {
+        // Enlace para crear un nuevo profesor (POST)
+        URI createUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .build();
+        _links.put("crear", createUri.toString());
 
         // Enlace para la colección de hijos de este estudiante
         URI hijosUri = uriInfo.getBaseUriBuilder()
@@ -85,5 +100,5 @@ public class EstudianteTo {
                 .build();
         _links.put("todos", allEstudiantesUri.toString());
     }
-    
+
 }

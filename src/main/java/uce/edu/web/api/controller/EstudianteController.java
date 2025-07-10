@@ -32,13 +32,13 @@ import uce.edu.web.api.service.to.EstudianteTo;
 @Path("/estudiantes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class EstudianteController{
+public class EstudianteController {
+
     @Inject
     private IEstudianteService estudianteService;
 
     @Inject
     private IHijoService hijoService;
-
 
     @GET
     @Path("/{id}")
@@ -46,22 +46,20 @@ public class EstudianteController{
             summary = "Consultar estudiante por ID",
             description = "Esta capacidad permite consultar estudiante por su identificador"
     )
-    public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
+    public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
         EstudianteTo estu = EstudianteMapper.toTo(this.estudianteService.buscarPorID(id));
-        estu.buildURI(uriInfo);    
+        estu.buildURI(uriInfo);
         return Response.status(227).entity(estu).build();
     }
-
-    //Se filtra por:
-    //?genero=F&provincia=pichincha solo si es tipo SOAP -> XML & RESTful ->JSON
+    
     @GET
     @Path("")
     @Operation(
             summary = "Consultar todos los estudiante",
             description = "Esta capacidad permite consultar todos los estudiante"
     )
-    public Response consultarTodos2(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo) {
-        List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
+        List<Estudiante> estudiantes = this.estudianteService.buscarTodos();
         List<EstudianteTo> estudiantesTo = estudiantes.stream()
                 .map(estudiante -> {
                     EstudianteTo to = EstudianteMapper.toTo(estudiante);
@@ -73,24 +71,42 @@ public class EstudianteController{
         return Response.status(Response.Status.OK).entity(estudiantesTo).build();
     }
 
+    //Se filtra por:
+    //?genero=F&provincia=pichincha solo si es tipo SOAP -> XML & RESTful ->JSON
+    /*  @GET
+    @Path("")
+    @Operation(
+            summary = "Consultar todos los estudiante",
+            description = "Esta capacidad permite consultar todos los estudiante"
+    )
+    public Response consultarTodos2(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
+        List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
+        List<EstudianteTo> estudiantesTo = estudiantes.stream()
+                .map(estudiante -> {
+                    EstudianteTo to = EstudianteMapper.toTo(estudiante);
+                    return to;
+                })
+                .collect(Collectors.toList());
 
+        return Response.status(Response.Status.OK).entity(estudiantesTo).build();
+    }*/
     @POST
     @Path("")
     @Operation(
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
     )
-    public Response guardar(@RequestBody Estudiante estudiante,@Context UriInfo uriInfo) {
+    public Response guardar(@RequestBody Estudiante estudiante, @Context UriInfo uriInfo) {
         this.estudianteService.guardar(estudiante);
-        
+
         URI createdUri = uriInfo.getBaseUriBuilder()
                 .path(EstudianteController.class)
                 .path(EstudianteController.class, "consultarPorId")
                 .build(estudiante.getId());
 
-        return Response.created(createdUri) 
-                       .entity(EstudianteMapper.toTo(estudiante))
-                       .build();
+        return Response.created(createdUri)
+                .entity(EstudianteMapper.toTo(estudiante))
+                .build();
     }
 
     @PUT
@@ -99,7 +115,7 @@ public class EstudianteController{
             summary = "Actualizar  estudiante por ID",
             description = "Esta capacidad permite actualizar estudiante por ID"
     )
-    public Response  actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
+    public Response actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
         estudiante.setId(id);
         this.estudianteService.actualizarPorId(estudiante);
         return Response.noContent().build();
@@ -111,13 +127,19 @@ public class EstudianteController{
             summary = "Actualizar  estudiante",
             description = "Esta capacidad permite actualizar estudiante"
     )
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id,@Context UriInfo uriInfo ) {
+    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
 
         estudiante.setId(id);
         Estudiante e = this.estudianteService.buscarPorID(id);
-        if (estudiante.getApellido() != null) e.setApellido(estudiante.getApellido());
-        if (estudiante.getNombre() != null) e.setNombre(estudiante.getNombre());
-        if (estudiante.getFechaNacimiento() != null) e.setFechaNacimiento(estudiante.getFechaNacimiento());
+        if (estudiante.getApellido() != null) {
+            e.setApellido(estudiante.getApellido());
+        }
+        if (estudiante.getNombre() != null) {
+            e.setNombre(estudiante.getNombre());
+        }
+        if (estudiante.getFechaNacimiento() != null) {
+            e.setFechaNacimiento(estudiante.getFechaNacimiento());
+        }
         this.estudianteService.actualizarPorId(e);
         EstudianteTo updatedEstudianteTo = EstudianteMapper.toTo(e);
         updatedEstudianteTo.buildURI(uriInfo);
@@ -139,7 +161,7 @@ public class EstudianteController{
     //http://localhost:8081/api/matricula/v1/estudiantes/1/hijos
     @GET
     @Path("/{id}/hijos")
-    public List<Hijo> obtenerHijosId(@PathParam("id") Integer id){
+    public List<Hijo> obtenerHijosId(@PathParam("id") Integer id) {
 
         return this.hijoService.buscarPorEstudianteId(id);
         /*Hijo h1 = new Hijo();

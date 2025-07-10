@@ -14,10 +14,10 @@ public class IEstudianteServiceImpl implements IEstudianteService {
     private IEstudianteRepo estudianteRepo;
 
 
-    @Override
+    /*@Override
     public List<Estudiante> buscarTodos(String genero) {
         return this.estudianteRepo.seleccionarTodos(genero);
-    }
+    }*/
 
     @Override
     public void actualizarPorId(Estudiante estudiante) {
@@ -35,13 +35,18 @@ public class IEstudianteServiceImpl implements IEstudianteService {
     }
 
     @Override
-    public void guardar(Estudiante estudiante) {
-       this.estudianteRepo.insertar(estudiante);
+    public Estudiante buscarPorID(Integer id) {
+        return this.estudianteRepo.seleccionarPorId(id);
     }
 
     @Override
-    public Estudiante buscarPorID(Integer id) {
-        return this.estudianteRepo.seleccionarPorId(id);
+    public List<Estudiante> buscarTodos() {
+      return this.estudianteRepo.seleccionarTodos();
+    }
+
+    @Override
+    public void guardar(Estudiante estudiante) {
+       this.estudianteRepo.insertar(estudiante);
     }
 
 }
