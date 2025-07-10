@@ -1,6 +1,8 @@
 package uce.edu.web.api.controller;
 
+import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -9,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -36,6 +39,7 @@ public class EstudianteController{
     @Inject
     private IHijoService hijoService;
 
+
     @GET
     @Path("/{id}")
     @Operation(
@@ -56,9 +60,17 @@ public class EstudianteController{
             summary = "Consultar todos los estudiante",
             description = "Esta capacidad permite consultar todos los estudiante"
     )
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
-        System.out.println(provincia);
-        return Response.status(Response.Status.OK).entity(this.estudianteService.buscarTodos(genero)).build();
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo) {
+        List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
+        List<EstudianteTo> estudiantesTo = estudiantes.stream()
+                .map(estudiante -> {
+                    EstudianteTo to = EstudianteMapper.toTo(estudiante);
+                    to.buildURI(uriInfo);
+                    return to;
+                })
+                .collect(Collectors.toList());
+
+        return Response.status(Response.Status.OK).entity(estudiantesTo).build();
     }
 
     @POST
@@ -67,9 +79,17 @@ public class EstudianteController{
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
     )
-    public Response  guardar(@RequestBody Estudiante estudiante) {
+    public Response  guardar(@RequestBody Estudiante estudiante,@Context UriInfo uriInfo) {
         this.estudianteService.guardar(estudiante);
-        return Response.status(Response.Status.CREATED).build();
+        
+        URI createdUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .path(EstudianteController.class, "consultarPorId")
+                .build(estudiante.getId());
+
+        return Response.created(createdUri) 
+                       .entity(EstudianteMapper.toTo(estudiante))
+                       .build();
     }
 
     @PUT
@@ -84,13 +104,13 @@ public class EstudianteController{
         return Response.noContent().build();
     }
 
-  /*  @PATCH
+    @PATCH
     @Path("/{id}")
     @Operation(
             summary = "Actualizar  estudiante",
             description = "Esta capacidad permite actualizar estudiante"
     )
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
+    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id,@Context UriInfo uriInfo ) {
 
         estudiante.setId(id);
         Estudiante e = this.estudianteService.buscarPorID(id);
@@ -98,9 +118,11 @@ public class EstudianteController{
         if (estudiante.getNombre() != null) e.setNombre(estudiante.getNombre());
         if (estudiante.getFechaNacimiento() != null) e.setFechaNacimiento(estudiante.getFechaNacimiento());
         this.estudianteService.actualizarPorId(e);
+        EstudianteTo updatedEstudianteTo = EstudianteMapper.toTo(e);
+        updatedEstudianteTo.buildURI(uriInfo);
         return Response.ok(e).build();
 
-    }*/
+    }
 
     @DELETE
     @Path("/{id}")

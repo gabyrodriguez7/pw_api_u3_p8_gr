@@ -57,9 +57,33 @@ public class EstudianteTo {
     }
     
     public void buildURI(UriInfo uriInfo){
-        URI todosHijos = uriInfo.getBaseUriBuilder().path(EstudianteController.class)
-        .path(EstudianteController.class,"obtenerHijosId").build(id);
-        _links.put("hijos", todosHijos.toString());
+
+        // Enlace para la colección de hijos de este estudiante
+        URI hijosUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .path(EstudianteController.class, "obtenerHijosId")
+                .build(this.id);
+        _links.put("hijos", hijosUri.toString());
+
+        // Enlace para actualizar este recurso (PUT)
+        URI updateUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .path(EstudianteController.class, "actualizarPorId")
+                .build(this.id);
+        _links.put("actualizar", updateUri.toString());
+
+        // Enlace para eliminar este recurso (DELETE)
+        URI deleteUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .path(EstudianteController.class, "borrarPorId")
+                .build(this.id);
+        _links.put("eliminar", deleteUri.toString());
+
+        // Enlace para la colección completa de estudiantes
+        URI allEstudiantesUri = uriInfo.getBaseUriBuilder()
+                .path(EstudianteController.class)
+                .build();
+        _links.put("todos", allEstudiantesUri.toString());
     }
     
 }

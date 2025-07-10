@@ -66,5 +66,12 @@ public class ProfesorTo {
         this.titulo = titulo;
     }
 
+    public Map<String, String> getLinks() {
+        return _links;
+    }
+
+    public void setLinks(Map<String, String> _links) {
+        this._links = _links;
+    }
 
 }

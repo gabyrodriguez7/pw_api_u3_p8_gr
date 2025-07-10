@@ -10,9 +10,5 @@ public interface IEstudianteRepo {
     public void actualizarPorId(Estudiante estudiante);
     public void actualizarParcialPorID(Estudiante estudiante);
     public void borrarPorID(Integer id);
-    public void insertar(Estudiante estudiante);
-
-
-    
-
+    public void insertar(Estudiante estudiante);   
 }
