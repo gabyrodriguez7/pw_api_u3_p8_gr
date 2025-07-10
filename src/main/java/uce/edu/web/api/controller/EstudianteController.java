@@ -23,6 +23,7 @@ import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.service.IEstudianteService;
 import uce.edu.web.api.service.IHijoService;
+import uce.edu.web.api.service.mapper.EstudianteMapper;
 import uce.edu.web.api.service.to.EstudianteTo;
 
 @Path("/estudiantes")
@@ -36,13 +37,14 @@ public class EstudianteController{
     private IHijoService hijoService;
 
     @GET
-    @Path("/consultar/{id}")
+    @Path("/{id}")
     @Operation(
             summary = "Consultar estudiante por ID",
             description = "Esta capacidad permite consultar estudiante por su identificador"
     )
     public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
-        EstudianteTo estu = this.estudianteService.buscarPorID(id,uriInfo);
+        EstudianteTo estu = EstudianteMapper.toTo(this.estudianteService.buscarPorID(id));
+        estu.buildURI(uriInfo);    
         return Response.status(227).entity(estu).build();
     }
 
