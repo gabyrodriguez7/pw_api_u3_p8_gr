@@ -34,13 +34,16 @@ public class ProfesorController{
     @Inject
     private IProfesorService profesorService;
 
+    @Context 
+    UriInfo uriInfo;
+
     @GET
     @Path("/{id}")
     @Operation(
             summary = "Consultar profesor por ID",
             description = "Esta capacidad permite consultar profesor por su identificador"
     )
-    public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
+    public Response consultarPorId(@PathParam("id") Integer id) {
         ProfesorTo prof =ProfesorMapper.toTo(this.profesorService.buscarPorId(id));
         prof.buildURI(uriInfo);
         return Response.status(227).entity(prof).build();
@@ -70,16 +73,18 @@ public class ProfesorController{
             summary = "Guardar profesor",
             description = "Esta capacidad permite guardar un nuevo profesor"
     )
-    public Response guardar(@RequestBody Profesor profesor, @Context UriInfo uriInfo) {
-        this.profesorService.guardar(profesor);
+    public Response guardar(@RequestBody ProfesorTo profesorTo) {
+        Profesor profesor = ProfesorMapper.toEntity(profesorTo);
+        Profesor profesorPersistido = this.profesorService.guardar(profesor);
+        ProfesorTo profesorToGuardado = ProfesorMapper.toTo(profesorPersistido);
         
         URI createdUri = uriInfo.getBaseUriBuilder()
                 .path(ProfesorController.class)
                 .path(ProfesorController.class, "consultarPorId")
-                .build(profesor.getId());
+                .build(profesorToGuardado.getId());
 
         return Response.created(createdUri)
-                       .entity(ProfesorMapper.toTo(profesor))
+                       .entity(ProfesorMapper.toEntity(profesorTo))
                        .build();
     }
 
@@ -89,9 +94,9 @@ public class ProfesorController{
             summary = "Actualizar profesor completo por ID",
             description = "Esta capacidad permite actualizar todos los campos de un profesor"
     )
-    public Response actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
+    public Response actualizarPorId(@RequestBody ProfesorTo profesor, @PathParam("id") Integer id) {
         profesor.setId(id);
-        this.profesorService.actualizarPorId(profesor);
+        this.profesorService.actualizarPorId(ProfesorMapper.toEntity(profesor));
         return Response.noContent().build();
     }
 
@@ -102,7 +107,7 @@ public class ProfesorController{
             description = "Esta capacidad permite actualizar campos específicos de un profesor"
     )
     public Response actualizarParcialPorId(
-            @RequestBody Profesor profesor, 
+            @RequestBody ProfesorTo profesor, 
             @PathParam("id") Integer id,
             @Context UriInfo uriInfo) {
         
@@ -132,4 +137,4 @@ public class ProfesorController{
         return Response.noContent().build();
     }
 
-}
+} 

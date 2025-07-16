@@ -17,10 +17,10 @@ public class IProfesorServiceImpl implements IProfesorService {
     public List<Profesor> consultarTodos() {
         return this.profesorRepo.seleccionarTodos();
     }
-
+    
     @Override
-    public void guardar(Profesor profesor) {
-        this.profesorRepo.insertar(profesor);
+    public Profesor guardar(Profesor profesor) {
+       return this.profesorRepo.insertar(profesor);
     }
 
     @Override

@@ -27,7 +27,6 @@ public class EstudianteRepoImpl implements IEstudianteRepo {
         myQuery.setParameter("genero", genero);
         return  myQuery.getResultList();
     }*/
-
     @Override
     public void actualizarPorId(Estudiante estudiante) {
         this.entityManager.merge(estudiante);
@@ -35,22 +34,25 @@ public class EstudianteRepoImpl implements IEstudianteRepo {
 
     @Override
     public void actualizarParcialPorID(Estudiante estudiante) {
-       this.entityManager.merge(estudiante);
+        this.entityManager.merge(estudiante);
     }
 
     @Override
     public void borrarPorID(Integer id) {
-       this.entityManager.remove( this.seleccionarPorId(id));
+        this.entityManager.remove(this.seleccionarPorId(id));
     }
 
     @Override
-    public void insertar(Estudiante estudiante) {
-      this.entityManager.persist(estudiante);
+    public Estudiante insertar(Estudiante estudiante) {
+        this.entityManager.persist(estudiante);
+        this.entityManager.flush();
+        this.entityManager.refresh(estudiante);
+        return estudiante;
     }
 
     @Override
     public List<Estudiante> seleccionarTodos() {
-        TypedQuery<Estudiante> myQuery = this.entityManager.createQuery("SELECT e FROM Estudiante e",Estudiante.class);
+        TypedQuery<Estudiante> myQuery = this.entityManager.createQuery("SELECT e FROM Estudiante e", Estudiante.class);
         return myQuery.getResultList();
     }
 

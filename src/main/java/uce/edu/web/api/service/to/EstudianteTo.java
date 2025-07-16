@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.ws.rs.core.UriInfo;
-import uce.edu.web.api.controller.EstudianteController;
 
 public class EstudianteTo {
 
@@ -67,38 +66,39 @@ public class EstudianteTo {
     }
 
     public void buildURI(UriInfo uriInfo) {
-        // Enlace para crear un nuevo profesor (POST)
+        // Enlace para crear un nuevo estudiante (POST)
         URI createUri = uriInfo.getBaseUriBuilder()
-                .path(EstudianteController.class)
+                .path("estudiantes")
                 .build();
         _links.put("crear", createUri.toString());
 
         // Enlace para la colección de hijos de este estudiante
         URI hijosUri = uriInfo.getBaseUriBuilder()
-                .path(EstudianteController.class)
-                .path(EstudianteController.class, "obtenerHijosId")
-                .build(this.id);
+                .path("estudiantes")
+                .path(this.id.toString())
+                .path("hijos")
+                .build();
         _links.put("hijos", hijosUri.toString());
 
         // Enlace para actualizar este recurso (PUT)
         URI updateUri = uriInfo.getBaseUriBuilder()
-                .path(EstudianteController.class)
-                .path(EstudianteController.class, "actualizarPorId")
-                .build(this.id);
+                .path("estudiantes")
+                .path(this.id.toString())
+                .build();
         _links.put("actualizar", updateUri.toString());
 
         // Enlace para eliminar este recurso (DELETE)
         URI deleteUri = uriInfo.getBaseUriBuilder()
-                .path(EstudianteController.class)
-                .path(EstudianteController.class, "borrarPorId")
-                .build(this.id);
+                .path("estudiantes")
+                .path(this.id.toString())
+                .build();
         _links.put("eliminar", deleteUri.toString());
 
         // Enlace para la colección completa de estudiantes
         URI allEstudiantesUri = uriInfo.getBaseUriBuilder()
-                .path(EstudianteController.class)
+                .path("estudiantes")
                 .build();
         _links.put("todos", allEstudiantesUri.toString());
-    }
+    } 
 
 }

@@ -12,6 +12,6 @@ public interface IEstudianteService {
     public void actualizarPorId(Estudiante estudiante);
     public void actualizarParcialPorID(Estudiante estudiante);
     public void borrarPorID(Integer id);
-    public void guardar(Estudiante estudiante);
+    public Estudiante guardar(Estudiante estudiante);
 
 }

@@ -28,8 +28,11 @@ public class ProfesorRepoImpl implements IProfesorRepo{
     }
 
     @Override
-    public void insertar(Profesor profesor) {
-         this.entityManager.persist(profesor);
+    public Profesor insertar(Profesor profesor) {
+        this.entityManager.persist(profesor);
+        this.entityManager.flush();
+        this.entityManager.refresh(profesor);
+         return profesor;
     }
 
     @Override

@@ -22,5 +22,5 @@ public class HijoRepoImpl implements IHijoRepo{
         myQuery.setParameter("id", id);
         return  myQuery.getResultList();
     }
-    
+     
 }

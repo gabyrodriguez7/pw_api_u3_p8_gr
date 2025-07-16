@@ -40,13 +40,16 @@ public class EstudianteController {
     @Inject
     private IHijoService hijoService;
 
+    @Context 
+    UriInfo uriInfo;
+
     @GET
     @Path("/{id}")
     @Operation(
             summary = "Consultar estudiante por ID",
             description = "Esta capacidad permite consultar estudiante por su identificador"
     )
-    public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
+    public Response consultarPorId(@PathParam("id") Integer id) {
         EstudianteTo estu = EstudianteMapper.toTo(this.estudianteService.buscarPorID(id));
         estu.buildURI(uriInfo);
         return Response.status(227).entity(estu).build();
@@ -58,7 +61,7 @@ public class EstudianteController {
             summary = "Consultar todos los estudiante",
             description = "Esta capacidad permite consultar todos los estudiante"
     )
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
         List<Estudiante> estudiantes = this.estudianteService.buscarTodos();
         List<EstudianteTo> estudiantesTo = estudiantes.stream()
                 .map(estudiante -> {
@@ -96,16 +99,18 @@ public class EstudianteController {
             summary = "Guardar estudiante",
             description = "Esta capacidad permite guardar un estudiante"
     )
-    public Response guardar(@RequestBody Estudiante estudiante, @Context UriInfo uriInfo) {
-        this.estudianteService.guardar(estudiante);
+    public Response guardar(@RequestBody EstudianteTo estudianteTo) { 
+        Estudiante estudiante = EstudianteMapper.toEntity(estudianteTo);
+        Estudiante estudiantePersistido = this.estudianteService.guardar(estudiante);
+        EstudianteTo estudianteToGuardado = EstudianteMapper.toTo(estudiantePersistido);
 
         URI createdUri = uriInfo.getBaseUriBuilder()
                 .path(EstudianteController.class)
                 .path(EstudianteController.class, "consultarPorId")
-                .build(estudiante.getId());
+                .build(estudianteToGuardado.getId());
 
         return Response.created(createdUri)
-                .entity(EstudianteMapper.toTo(estudiante))
+                .entity(EstudianteMapper.toTo(EstudianteMapper.toEntity(estudianteTo)))
                 .build();
     }
 
@@ -115,9 +120,9 @@ public class EstudianteController {
             summary = "Actualizar  estudiante por ID",
             description = "Esta capacidad permite actualizar estudiante por ID"
     )
-    public Response actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
+    public Response actualizarPorId(@RequestBody EstudianteTo estudiante, @PathParam("id") Integer id) {
         estudiante.setId(id);
-        this.estudianteService.actualizarPorId(estudiante);
+        this.estudianteService.actualizarPorId(EstudianteMapper.toEntity(estudiante));
         return Response.noContent().build();
     }
 
@@ -127,7 +132,7 @@ public class EstudianteController {
             summary = "Actualizar  estudiante",
             description = "Esta capacidad permite actualizar estudiante"
     )
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
+    public Response actualizarParcialPorId(@RequestBody EstudianteTo estudiante, @PathParam("id") Integer id) {
 
         estudiante.setId(id);
         Estudiante e = this.estudianteService.buscarPorID(id);
@@ -175,4 +180,4 @@ public class EstudianteController {
         return hijos;*/
 
     }
-}
+} 
