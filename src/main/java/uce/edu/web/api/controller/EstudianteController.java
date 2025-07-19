@@ -4,9 +4,13 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.ClaimValue;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -33,6 +37,12 @@ import uce.edu.web.api.service.to.EstudianteTo;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class EstudianteController {
+    @Inject
+    JsonWebToken jwt;
+
+    @Inject
+    @Claim("sub")
+    ClaimValue<String> subject;
 
     @Inject
     private IEstudianteService estudianteService;
@@ -45,6 +55,7 @@ public class EstudianteController {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed("admin")
     @Operation(
             summary = "Consultar estudiante por ID",
             description = "Esta capacidad permite consultar estudiante por su identificador"
